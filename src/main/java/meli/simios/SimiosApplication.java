@@ -17,38 +17,69 @@ public class SimiosApplication {
 						"CCGCTA",
 						"TCACTG"};
 
-		String[] sim = {"CTGAGA",
-						"CTGAGC",
-						"CATTGT",
-						"CGAGGG",
-						"GCCCTA",
-						"TCACTG"};
+		String[] verticalSim = {"CTGTGA",
+								"CTGAGC",
+								"CATTGT",
+								"CGAGGG",
+								"GCCCTA",
+								"TCACTG"};
 
-		System.out.println(isSimian(notSim));
-		System.out.println(isSimian(sim));
+		String[] horizontalSim = {"CCCCGA",
+				"GTGAGC",
+				"CATTGT",
+				"CGAGGG",
+				"GCCCTA",
+				"TCACTG"};
+
+		String[] diagonalSim = {"CCTCGA",
+								"GCGAGC",
+								"CACTAT",
+								"CGACGG",
+								"GCCCTA",
+								"TCACTG"};
+
+		System.out.println("Please be false: " + isSimian(notSim));
+		System.out.println("Please be true (VER): " + isSimian(verticalSim));
+		System.out.println("Please be true (HOR): " + isSimian(horizontalSim));
+		System.out.println("Please be true (DIA): " + isSimian(diagonalSim));
 	}
 
 
 
 	static boolean isSimian (String[] dna) {
-		return hasHorizontal(dna) || hasVertical(dna);
+		char[][] matrix = toMatrix(dna);
+
+		return hasHorizontal(matrix) || hasVertical(matrix) || hasDiagonal(matrix);
 	}
 
-	private static boolean hasHorizontal(String[] dna) {
-		// stores the order of the matrix so I don't need to call .length() on every string
+	private static char[][] toMatrix(String[] dna) {
 		int matrixOrder = dna[0].length();
-		for (String row: dna) {
+		char[][] matrix = new char[matrixOrder][matrixOrder];
+
+		for (int line = 0; line < dna.length; line++) {
+			for (int column = 0; column < matrixOrder; column++) {
+				matrix[line][column] = dna[line].charAt(column);
+			}
+		}
+
+		return matrix;
+	}
+
+	private static boolean hasHorizontal(char[][] dna) {
+		// stores the order of the matrix so I don't need to call .length() on every string
+		int matrixOrder = dna.length;
+		for (int row = 0; row < matrixOrder; row++) {
 
 			// stores the repetition of a character until it hits 4
 			int charCount = 1;
-			char actualChar = row.charAt(0);
-			for (int i = 1; i < matrixOrder; i++) {
-				if(actualChar == row.charAt(i)) {
+			char actualChar = dna[row][0];
+			for (int column = 1; column < matrixOrder; column++) {
+				if(actualChar == dna[row][column]) {
 					charCount++;
 					if(charCount == 4) return true;
 				} else {
 					charCount = 0;
-					actualChar = row.charAt(i);
+					actualChar = dna[row][column];
 				}
 			}
 		}
@@ -56,23 +87,21 @@ public class SimiosApplication {
 		return false;
 	}
 
-	// could have done a "rotate matrix and then use hasVertical() method" but rotating a matrix is expensive depending
-	// on its size
-	private static boolean hasVertical(String[] dna) {
+	private static boolean hasVertical(char[][] dna) {
 		// stores the order of the matrix so I don't need to call .length() on every string
-		int matrixOrder = dna[0].length();
-
+		int matrixOrder = dna.length;
 		for (int column = 0; column < matrixOrder; column++) {
+
 			int charCount = 1;
-			char actualChar = dna[0].charAt(column);
+			char actualChar = dna[0][column];
 
 			for (int row = 1; row < matrixOrder; row++) {
-				if(actualChar == dna[row].charAt(column)) {
+				if(actualChar == dna[row][column]) {
 					charCount++;
 					if(charCount == MAXIMUM_REPETITIONS) return true;
 				} else {
 					charCount = 0;
-					actualChar = dna[row].charAt(column);
+					actualChar = dna[row][column];
 				}
 			}
 		}
@@ -80,7 +109,9 @@ public class SimiosApplication {
 		return false;
 	}
 
-	private static boolean hasDiagonal(String[] dna) {
+	private static boolean hasDiagonal(char[][] dna) {
+
+
 		return false;
 	}
 
