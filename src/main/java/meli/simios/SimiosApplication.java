@@ -1,5 +1,8 @@
 package meli.simios;
 
+import static meli.simios.SimiosApplication.Direction.LEFT;
+import static meli.simios.SimiosApplication.Direction.RIGHT;
+
 //@SpringBootApplication
 public class SimiosApplication {
 
@@ -109,10 +112,48 @@ public class SimiosApplication {
 		return false;
 	}
 
-	private static boolean hasDiagonal(char[][] dna) {
 
+	// unfortunately recursive
+	private static boolean hasDiagonal(char[][] dna) {
+		for (int row = 0; row < dna.length; row++) {
+			for (int column = 0; column < dna.length; column++) {
+				char actualChar = dna[row][column];
+
+				// saving it to a boolean to avoid calling the recursive method twice
+				boolean result = checkDiagonals(dna, actualChar, row, column);
+				if(result) return true;
+			}
+		}
 
 		return false;
 	}
 
+	private static boolean checkDiagonals(char[][] matrix, char actualChar, int row, int column) {
+		return checkLowerNeighborsRecursive(matrix, actualChar, row, column, LEFT, 1)
+				|| checkLowerNeighborsRecursive(matrix, actualChar, row, column, RIGHT, 1);
+	}
+
+	private static boolean checkLowerNeighborsRecursive (char[][] matrix, char actualChar, int row, int column, Direction dir, int count) {
+		if(count == 4) return true;
+
+		int neighborColumn ;
+		int neighborRow;
+		if(dir == LEFT) {
+			neighborColumn = column - 1;
+			neighborRow = row + 1;
+		} else {
+			neighborColumn = column + 1;
+			neighborRow = row - 1;
+		}
+		// quick check to see if not out of bounds
+		if(neighborRow < matrix.length && neighborColumn >= 0) {
+			return checkLowerNeighborsRecursive(matrix, actualChar, neighborRow, neighborColumn, dir, count+1);
+		}
+
+		return false;
+	}
+
+	enum Direction {
+		LEFT, RIGHT;
+	}
 }
