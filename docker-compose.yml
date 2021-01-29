@@ -1,0 +1,35 @@
+version: '3.3'
+services:
+  db:
+    image: mongo:3
+    container_name: mongo_container
+    environment:
+    - MONGO_INITDB_DATABASE=simian_checker_db
+
+#    volumes:
+#      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+    ports:
+        - 27017:27017
+
+#    redis:
+#      image: redis
+#      container_name: redis
+#      ports:
+#        - 6379:6379
+
+
+
+  simian-checker-app:
+    container_name: simian_app_container
+    image: simian-checker
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - 80:8080
+    depends_on:
+      - db
+    command: --spring.profiles.active=prod
+
+volumes:
+  db-volume:
