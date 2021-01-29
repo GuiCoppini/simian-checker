@@ -1,13 +1,14 @@
-package meli.simian.domain.service;
+package meli.simian.domain.service.impl;
 
+import meli.simian.domain.service.DnaHasherService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-class DnaHasherServiceTest {
+class DnaHasherServiceImplTest {
 
-    DnaHasherService hasher = new DnaHasherService();
+    DnaHasherService hasher = new DnaHasherServiceImpl();
 
     @Test
     void hashingSameArrayTwice() {

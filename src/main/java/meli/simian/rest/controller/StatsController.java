@@ -1,5 +1,6 @@
 package meli.simian.rest.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import meli.simian.domain.model.StatsInfo;
 import meli.simian.domain.service.StatsService;
 import meli.simian.rest.converter.StatsConverter;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 public class StatsController {
 
     StatsService service;
@@ -23,6 +25,7 @@ public class StatsController {
 
     @GetMapping("/stats")
     public StatsResponse getStatistics() {
+        log.info("Retrieving statistics");
         StatsInfo domainObject = service.getActualStats();
 
         return converter.convert(domainObject);

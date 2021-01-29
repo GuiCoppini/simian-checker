@@ -1,8 +1,9 @@
-package meli.simian.domain.service;
+package meli.simian.domain.service.impl;
 
 import meli.simian.domain.entity.enumerator.DnaType;
 import meli.simian.domain.model.StatsInfo;
 import meli.simian.domain.repository.DnaRepository;
+import meli.simian.domain.service.StatsService;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,10 +12,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class StatsServiceTest {
+class StatsServiceImplTest {
     DnaRepository repo = mock(DnaRepository.class);
 
-    StatsService service = new StatsService(repo);
+    StatsService service = new StatsServiceImpl(repo);
 
     @Test
     void usesRepositoryToBuildResponse() {

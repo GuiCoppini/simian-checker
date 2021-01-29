@@ -23,7 +23,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.16'
 	annotationProcessor 'org.projectlombok:lombok:1.18.16'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.3.0.RELEASE'
-	compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+	compile group: 'javax.validator', name: 'validator-api', version: '2.0.1.Final'
 
 	compile group: 'org.hibernate', name: 'hibernate-validator', version: '6.0.10.Final'
 

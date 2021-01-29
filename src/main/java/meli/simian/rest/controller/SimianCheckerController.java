@@ -1,5 +1,6 @@
 package meli.simian.rest.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import meli.simian.domain.service.OrchestratorService;
 import meli.simian.rest.model.DNACheckRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
+@Slf4j
 public class SimianCheckerController {
 
     // autowiring via constructor allows increased flexibility for mocks and tests
@@ -24,10 +26,12 @@ public class SimianCheckerController {
 
     @PostMapping("/simian")
     public ResponseEntity dnaCheck(@Valid @RequestBody DNACheckRequest dna) {
+        log.info("Checking for simian pattern on DNA={}",dna);
         boolean isSimian = service.process(dna.getDna());
 
-        if(isSimian) return new ResponseEntity(HttpStatus.OK);
-        return new ResponseEntity(HttpStatus.FORBIDDEN);
+        log.info("DNA computed successfully, isSimian={}", isSimian);
+        if(isSimian) return new ResponseEntity(HttpStatus.FORBIDDEN);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

@@ -1,13 +1,14 @@
 package meli.simian.rest.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import meli.simian.rest.validation.ValidDNAMatrix;
-
-import javax.validation.constraints.NotNull;
+import lombok.NoArgsConstructor;
+import meli.simian.rest.validator.ValidDNAMatrix;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class DNACheckRequest {
-    @NotNull
     @ValidDNAMatrix
     private String[] dna;
 }

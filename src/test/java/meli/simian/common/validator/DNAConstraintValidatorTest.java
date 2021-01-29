@@ -1,68 +1,61 @@
-package meli.simian.rest.validation;
+package meli.simian.common.validator;
 
+import meli.simian.rest.validator.DNAConstraintValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.validation.ConstraintValidatorContext;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class DNAMatrixValidatorTest {
+class DNAConstraintValidatorTest {
 
-    DNAMatrixValidator validator = new DNAMatrixValidator();
+    // the mock of the validator that does the real validation, this class being tested only adds the errors
+    // to the context
+    DnaValidator mockedValidator = mock(DnaValidator.class);
+
+    DNAConstraintValidator constraintValidator = new DNAConstraintValidator(mockedValidator);
 
     ConstraintValidatorContext constraintValidatorContext;
 
     @BeforeEach
     void setUp() {
         constraintValidatorContext = mockConstraintValidatorContext();
-
     }
 
     @Test
     void disablesDefaultMessage() {
         String[] invalidDna = {"ATC", "ACG"};
 
-        assertFalse(validator.isValid(invalidDna, constraintValidatorContext));
+        mockValidatorToReturnErrors(invalidDna, "any error");
+
+        assertFalse(constraintValidator.isValid(invalidDna, constraintValidatorContext));
         // assert that it removes the default message
         verify(constraintValidatorContext, times(1)).disableDefaultConstraintViolation();
     }
 
     @Test
-    void notSquareDNAMatrix() {
+    void populatesMessagesFromValidator() {
         String[] invalidDna = {"ATC", "ACG"};
 
-        assertFalse(validator.isValid(invalidDna, constraintValidatorContext));
-        // assert that it adds an error message to the constraintValidatorContext
-        verify(constraintValidatorContext, times(1)).buildConstraintViolationWithTemplate(any(String.class));
-    }
+        String[] errors = {"error1", "error2", "error3"};
+        mockValidatorToReturnErrors(invalidDna, errors);
 
-    @Test
-    void dnaWithLowerCase() {
-        String[] invalidDna = {"aA", "TC"};
+        assertFalse(constraintValidator.isValid(invalidDna, constraintValidatorContext));
+        // assert that it fills the 3 messages
+        verify(constraintValidatorContext, times(3)).buildConstraintViolationWithTemplate(anyString());
 
-        assertFalse(validator.isValid(invalidDna, constraintValidatorContext));
-        // assert that it adds an error message to the constraintValidatorContext
-        verify(constraintValidatorContext, times(1)).buildConstraintViolationWithTemplate(any(String.class));
-    }
-
-    @Test
-    void emptyDNA() {
-        String[] invalidDna = {};
-
-        assertFalse(validator.isValid(invalidDna, constraintValidatorContext));
-    }
-
-    @Test
-    void invalidCharacters() {
-        String[] invalidDna = {"ACT", "PER"};
-
-        assertFalse(validator.isValid(invalidDna, constraintValidatorContext));
+        for (String error : errors) {
+            verify(constraintValidatorContext).buildConstraintViolationWithTemplate(error);
+        }
     }
 
     private ConstraintValidatorContext mockConstraintValidatorContext() {
@@ -77,5 +70,13 @@ class DNAMatrixValidatorTest {
 
         when(builder.addPropertyNode(any())).thenReturn(nodeBuilderContext);
         return constraintValidatorContext;
+    }
+
+    void mockValidatorToReturnErrors(String[] dna, String... messages) {
+        HashSet<String> errors = new HashSet<>();
+
+        errors.addAll(Arrays.asList(messages));
+
+        when(mockedValidator.checkForErrors(dna)).thenReturn(errors);
     }
 }

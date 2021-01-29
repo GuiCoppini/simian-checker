@@ -20,19 +20,19 @@ public class LogContextFilter implements Filter {
     public void doFilter(ServletRequest request,
                          ServletResponse response,
                          FilterChain chain) throws ServletException, IOException {
-        long start = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
 
         String httpMethod = req.getMethod();
         String endpoint = req.getRequestURI();
-        log.info("m={} {}", httpMethod, endpoint);
+        log.info("m={} path={}", httpMethod, endpoint);
 
         chain.doFilter(request, response);
 
-        long totalTime = System.currentTimeMillis() - start;
-        log.info("m={} {}, timeElapsed={}ms, status={}",
+        long totalTime = System.currentTimeMillis() - startTime;
+        log.info("m={} path={}, timeElapsed={}ms, status={}",
                 httpMethod, endpoint, totalTime, res.getStatus());
     }
 }

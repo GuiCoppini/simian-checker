@@ -20,7 +20,7 @@ public class DnaDocument {
     @Indexed
     DnaType type;
 
-    @Indexed
+    @Indexed(unique = true)
     String dnaHash;
 
     @CreatedDate

@@ -1,4 +1,4 @@
-package meli.simian.rest.validation;
+package meli.simian.rest.validator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,7 +13,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({PARAMETER, FIELD, TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = DNAMatrixValidator.class)
+@Constraint(validatedBy = DNAConstraintValidator.class)
 @Documented
 public @interface ValidDNAMatrix {
 

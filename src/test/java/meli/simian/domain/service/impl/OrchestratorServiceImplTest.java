@@ -1,15 +1,15 @@
-package meli.simian.domain.service;
+package meli.simian.domain.service.impl;
 
 import meli.simian.domain.entity.DnaDocument;
 import meli.simian.domain.entity.enumerator.DnaType;
-import meli.simian.domain.repository.DnaRepository;
+import meli.simian.domain.service.DnaService;
+import meli.simian.domain.service.OrchestratorService;
+import meli.simian.domain.service.SimianCheckerService;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,25 +19,23 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class OrchestratorServiceTest {
+class OrchestratorServiceImplTest {
 
-    DnaRepository repository = mock(DnaRepository.class);
-    DnaHasherService hasher = mock(DnaHasherService.class);
-    SimianCheckerService simianCheckerService = mock(SimianCheckerService.class);
+    DnaService dnaService = mock(DnaServiceImpl.class);
+    SimianCheckerService simianCheckerService = mock(SimianCheckerServiceImpl.class);
 
-    OrchestratorService orchestrator = new OrchestratorService(repository, hasher, simianCheckerService);
+    OrchestratorService orchestrator = new OrchestratorServiceImpl(dnaService, simianCheckerService);
 
     @Test
     void alreadyExistentDna() {
         String[] dna = {"literally", "anything"};
-        String EXISTENT_HASH = "ExistentHash";
-        when(hasher.hash(any())).thenReturn(EXISTENT_HASH);
-        when(repository.findByDnaHash(EXISTENT_HASH)).thenReturn(createDnaDocument(DnaType.HUMAN, EXISTENT_HASH));
+
+        when(dnaService.findByDna(dna)).thenReturn(createDnaDocument(DnaType.HUMAN, "any hash"));
 
         boolean result = orchestrator.process(dna);
 
         // never saved anything
-        verify(repository, never()).save(any());
+        verify(dnaService, never()).persistComputation(any(String[].class), any(boolean.class));
         // didn't compute anything
         verify(simianCheckerService, never()).isSimian(any());
 
@@ -48,23 +46,13 @@ class OrchestratorServiceTest {
     @Test
     void neverComputedDna() {
         String[] dna = {"literally", "anything"};
-        String NON_EXISTENT_HASH = "NonExistentHash";
-        when(hasher.hash(any())).thenReturn(NON_EXISTENT_HASH);
-        when(repository.findByDnaHash(NON_EXISTENT_HASH)).thenReturn(null);
+        when(dnaService.findByDna(dna)).thenReturn(null);
         when(simianCheckerService.isSimian(dna)).thenReturn(true);
-
-        DnaDocument expectedToBeSaved = createDnaDocument(DnaType.MUTANT, NON_EXISTENT_HASH);
 
         boolean result = orchestrator.process(dna);
 
-        // captor will check the Dna that was saved
-        ArgumentCaptor<DnaDocument> captor = ArgumentCaptor.forClass(DnaDocument.class);
-
         // saved a mutant dna (as I forced the simianCheckerService to return true)
-        verify(repository, times(1)).save(captor.capture());
-        DnaDocument savedDnaDocument = captor.getValue();
-        assertEquals(expectedToBeSaved.getType(), savedDnaDocument.getType());
-        assertEquals(expectedToBeSaved.getDnaHash(), savedDnaDocument.getDnaHash());
+        verify(dnaService, times(1)).persistComputation(dna, result);
 
         // computed the dna once through the checker
         verify(simianCheckerService, times(1)).isSimian(dna);
