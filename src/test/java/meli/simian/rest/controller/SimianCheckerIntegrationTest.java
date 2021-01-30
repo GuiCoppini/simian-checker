@@ -2,6 +2,10 @@ package meli.simian.rest.controller;
 
 import com.mongodb.BasicDBObject;
 import meli.simian.SimianApplication;
+import meli.simian.domain.entity.DnaDocument;
+import meli.simian.domain.entity.enumerator.DnaType;
+import meli.simian.domain.repository.DnaRepository;
+import meli.simian.domain.service.impl.DnaHasherServiceImpl;
 import meli.simian.rest.model.DNACheckRequest;
 import meli.simian.rest.model.ErrorPayload;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +19,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,6 +36,9 @@ class SimianCheckerIntegrationTest {
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    DnaRepository repository;
 
     @BeforeEach
     void clearDb() {
@@ -139,5 +148,51 @@ class SimianCheckerIntegrationTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), body.getCode());
         assertEquals(HttpStatus.BAD_REQUEST.getReasonPhrase(), body.getMessage());
         assertEquals(1, body.getErrors().size());
+    }
+
+    @Test
+    void repeatingTheRequestHasTheSameResult() {
+
+        DNACheckRequest request = new DNACheckRequest(new String[]{"AG", "CT"});
+
+        ResponseEntity<ResponseEntity> first = client.postForEntity("/simian", request, ResponseEntity.class);
+        ResponseEntity<ResponseEntity> second = client.postForEntity("/simian", request, ResponseEntity.class);
+
+        assertEquals(first, second);
+    }
+
+    @Test
+    void repeatingRequestWontPersistTwice() {
+
+        // asserting it begins empty
+        assertEquals(0, repository.findAll().size());
+
+        DNACheckRequest request = new DNACheckRequest(new String[]{"AG", "CT"});
+
+        client.postForEntity("/simian", request, ResponseEntity.class);
+        client.postForEntity("/simian", request, ResponseEntity.class);
+
+        assertEquals(1, repository.findAll().size());
+    }
+
+    @Test
+    void firstRequestPersistsEntity() {
+        // asserting it begins empty
+        assertEquals(0, repository.findAll().size());
+
+        DnaHasherServiceImpl hasher = new DnaHasherServiceImpl();
+
+        String[] DNA_SENT = {"AG", "CT"};
+        DNACheckRequest request = new DNACheckRequest(DNA_SENT);
+
+        client.postForEntity("/simian", request, ResponseEntity.class);
+
+        DnaDocument expected = new DnaDocument("any id", DnaType.HUMAN, hasher.hash(DNA_SENT), LocalDateTime.now());
+
+        // making sure that the persisted entity had correct type and hash. In other words I'm making sure it persisted
+        // the correct entity
+        DnaDocument persisted = repository.findAll().get(0);
+        assertEquals(expected.getType(), persisted.getType());
+        assertEquals(expected.getDnaHash(), persisted.getDnaHash());
     }
 }

@@ -1,5 +1,6 @@
 package meli.simian.domain.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import meli.simian.domain.entity.enumerator.DnaType;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @Document(collection = "dna")
 @Builder
+@AllArgsConstructor
 public class DnaDocument {
     @MongoId
     String id;

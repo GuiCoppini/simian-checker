@@ -17,7 +17,10 @@ A aplicação também utiliza:
 * EmbeddedMongo - MongoDB embedded utilizado nos testes integrados
 
 ### Por que Java 11?
-No início, a aplicação estava sendo escrita em Java 8 por costume, porém, o deploy no GCP era 1000x mais fáciç
+No início, a aplicação estava sendo escrita em Java 8 (por costume meu), porém, o deploy no GCP é muito mais fluido de
+fazer quando estamos utilizando Java 11 (Exemplo: com Java 11 é necessário montar um XML com as configurações e o GCP
+ignorava tudo que eu tentava colocar). Assim, como não gerou impacto nos fluxos, o Java para o qual o Gradle aponta é o 11
+e, para fazer o gradle wrapper funcionar, é necessário settar o path Java 11 na JAVA_HOME, pois o wrapper utiliza o JAVA_HOME. 
 
 
 ## Estrutura da aplicação
@@ -63,13 +66,20 @@ Conclusão: caso seja necessário o Redis para esse projeto, a POC foi feita e b
 do docker-compose, build.gradle e application*-properties.
 
 ## Hospedagem
-Para decidir onde hospedar o serviço, encontrei diversos problemas. A ideia inicial era hospedar no GCP, porém 
-não consegui fazer com que a aplicação subisse um AppEngine com o SpringActiveProfiles diferente do default, o que 
-é um problema considerável para uma app do mundo real. Quando o CLI identificava que a configuração estava 
-com o ActiveProfiles settado, ela nunca fazia o deploy e em um dado momento uma aplicação que estava com problema ficou 
-restartando ininterruptamente e subindo mais de 9 instâncias de AppEngine. Nem o console do GCP deixava eu deletar as instâncias 
-e tive que terminar por encerrar o projeto.  
-Depois disso eu criei outro projeto lá mas os problemas persistem; por isso migrei para o Heroku. 
+A hospedagem da aplicação foi feita:
+* Heroku - Muito fácil de subir, fácil de passar variáveis de ambiente e fácil de configurar (e grátis).
+* GCP - Subir um Java 8 e um Java 11 são configurações diferentes, Java 8 deu muita dor de cabeça e acabou indo como Java 11.
+
+Heroku
+```
+https://simian-checker-app.herokuapp.com/stats
+```
+
+GCP
+```
+https://simian-checker.ue.r.appspot.com/stats
+```
+
 
 ## Como rodar a aplicação
 Para rodar a aplicação, há, a grosso modo, 2 maneiras:

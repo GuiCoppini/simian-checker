@@ -40,11 +40,8 @@ class RestExceptionHandlerTest {
 
     @Test
     void genericGenericExceptionBuildsErrorPayload_500() throws JsonProcessingException {
-        HashSet<String> errorSet = new HashSet<>();
         String errorMessage = "Exception message which should NOT be shown to the user";
         ValidationException exampleException = new ValidationException(errorMessage);
-
-
 
         ResponseEntity<ErrorPayload> response = handler.handleGenericExceptionHandler(exampleException);
 
@@ -57,5 +54,4 @@ class RestExceptionHandlerTest {
         assertThat(json, not("errors"));
 
     }
-
 }
