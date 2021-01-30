@@ -93,6 +93,11 @@ Por fim, após o algoritmo verificar se o DNA é simio ou não, o DNA é digerid
 #### Endpoint `/stats`
 O endpoint de statistics é bem simples, o StatsController faz a requisição para o StatsService que, por sua vez, utiliza o DnaRepository para que busque no banco a quantidade de DNAs salvos com cada tipo (humano ou mutante), retorna um objeto para o Controller e o Controller , por ser da camada de interface REST, faz a tratativa no objeto e o converte para o objeto de response, podendo omitir campos se precisar.
 
+#### Endpoint `/mgmt/clear`
+Este endpoint de Management só foi criado para facilitar na hora da execução dos testes.
+Assim, o usuário que está testando a aplicação pode limpar o banco e o cache para testar algumas funcionalidades sem precisar 
+aguardar o tempo do reset do Cache e sem precisar logar no Atlas para limpar o banco.
+
 ## Testes
 No pacote de teste, é possível encontrar testes dos services da aplicação e também do controller da aplicação.
 
@@ -140,7 +145,6 @@ MongoDB -
 mongodb+srv://meli_user:meli_passwd@simian-checker-cluster.auxqr.mongodb.net/simian_checker_db
 ```
 
-
 Heroku
 ```
 https://simian-checker-app.herokuapp.com/
@@ -151,7 +155,43 @@ GCP
 https://simian-checker.ue.r.appspot.com/
 ```
 
-### Documentação da API
+## Curls essenciais
+Aqui vão alguns curls para facilitar na hora de consumir a API:
+
+- Curl para enviar DNA não simio (Humano)
+```bash
+curl --location --request POST 'https://simian-checker.ue.r.appspot.com/simian' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "dna":  ["ACTG", "GACT", "AGGG", "GACT"]
+}'
+```
+
+- Curl para enviar DNA simio (Mutante)
+```bash
+curl --location --request POST 'https://simian-checker.ue.r.appspot.com/simian' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "dna":  ["ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"]
+}'
+```
+
+- Curl para o endpoint de estatísticas
+```
+curl --location --request GET 'https://simian-checker.ue.r.appspot.com/stats'
+```
+
+- Curl para limpar o banco e/ou o cache
+```
+curl --location --request GET 'https://simian-checker.ue.r.appspot.com/mgmt/clear' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "clear_cache": true,
+    "clear_database": true
+}'
+```
+
+## Documentação da API
 A documentação, como indicado no início, está disponível no Swagger da aplicação:
 ```
 https://simian-checker-app.herokuapp.com/swagger-ui.html
@@ -162,3 +202,5 @@ Aqui vão algumas ideias que me soaram interessantes porém não fizeram parte d
 * Task do gradle separada para rodar os testes integrados separadamente
 * Trocar o MongoDB embedded pelo TestContainers
 * Descrever os testes com @DisplayName
+* Colocar autenticação por header no endpoint de /mgmt/
+* Elaborar testes sobre cache no teste integrado do /mgmt/clear
