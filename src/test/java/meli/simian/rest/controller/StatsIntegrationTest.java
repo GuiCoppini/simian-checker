@@ -1,5 +1,7 @@
 package meli.simian.rest.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import meli.simian.SimianApplication;
 import meli.simian.domain.entity.DnaDocument;
@@ -20,6 +22,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
@@ -73,7 +78,8 @@ class StatsIntegrationTest {
         long humans = 841;
         long mutants = 564;
 
-        String expectedRatio = "0.67";
+        double expectedRatio = 0.67;
+
         populateDatabase(humans, mutants);
 
         // correct is mutant/human
@@ -88,7 +94,7 @@ class StatsIntegrationTest {
         long humans = 158;
         long mutants = 654;
 
-        String expectedRatio = "4.14";
+        double expectedRatio = 4.14;
         populateDatabase(humans, mutants);
 
         // correct is mutant/human
@@ -96,6 +102,25 @@ class StatsIntegrationTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedRatio, response.getBody().getRatio());
+    }
+
+    @Test
+    public void doesNotShowRatioFieldWhenHumanCountIsZero()
+            throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        long humans = 0;
+        long mutants = 654;
+
+        populateDatabase(humans, mutants);
+
+        // correct is mutant/human
+        ResponseEntity<StatsResponse> response = client.getForEntity("/stats", StatsResponse.class);
+
+        String dtoAsString = mapper.writeValueAsString(response);
+
+        assertThat(dtoAsString, containsString("count_mutant_dna"));
+        assertThat(dtoAsString, containsString("count_human_dna"));
+        assertThat(dtoAsString, not(containsString("ratio")));
     }
 
 

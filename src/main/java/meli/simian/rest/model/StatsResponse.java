@@ -1,5 +1,6 @@
 package meli.simian.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +18,6 @@ public class StatsResponse {
     @JsonProperty("count_human_dna")
     private Long humanCount;
 
-    private String ratio;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double ratio;
 }

@@ -1,5 +1,6 @@
 package meli.simian.rest.controller;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import meli.simian.domain.model.StatsInfo;
 import meli.simian.domain.service.StatsService;
@@ -24,6 +25,7 @@ public class StatsController {
     }
 
     @GetMapping("/stats")
+    @ApiOperation(value = "Shows statistics from database, including the ration for mutant:human DNAs")
     public StatsResponse getStatistics() {
         log.info("Retrieving statistics");
         StatsInfo domainObject = service.getActualStats();

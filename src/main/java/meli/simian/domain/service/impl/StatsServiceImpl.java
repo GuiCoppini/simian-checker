@@ -27,6 +27,10 @@ public class StatsServiceImpl implements StatsService {
         long humanCount = repository.countByType(DnaType.HUMAN);
 
 
+        if(humanCount == 0) {
+            log.info("Not enough humans to calculate the ratio.");
+            return new StatsInfo(mutantCount, humanCount, null);
+        }
         StatsInfo statsInfo = StatsInfo.build(mutantCount, humanCount);
         log.info("Statistics calculated, statsInfo={}", statsInfo);
         return statsInfo;

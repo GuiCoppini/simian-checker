@@ -6,6 +6,7 @@ import meli.simian.domain.service.DnaService;
 import meli.simian.domain.service.OrchestratorService;
 import meli.simian.domain.service.SimianCheckerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 
@@ -23,6 +24,7 @@ public class OrchestratorServiceImpl implements OrchestratorService {
     }
 
 
+    @Cacheable(value = "dna")
     @Override
     public boolean process(String[] dna) {
         log.info("Checking for DNA in database");

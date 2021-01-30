@@ -11,11 +11,21 @@ import java.util.Locale;
 @Service
 public class StatsConverter implements GenericConverter<StatsInfo, StatsResponse> {
     public StatsResponse convert(StatsInfo domain) {
+
+        // US ensures the final number will be "X.YZ" instead of "X,YZ" (using DOT instead of COMMA)
+        Double ratio = domain.getRatio();
+
         return StatsResponse.builder()
                 .humanCount(domain.getHumanCount())
                 .mutantCount(domain.getMutantCount())
-                // US ensures the final number will be "X.YZ" instead of "X,YZ" (using DOT instead of COMMA)
-                .ratio(new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.US)).format(domain.getRatio()))
+                .ratio(formatRatio(ratio))
                 .build();
+    }
+
+    private Double formatRatio(Double ratio) {
+        if (ratio != null) {
+            return Double.valueOf(new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.US)).format(ratio));
+        }
+        return null;
     }
 }

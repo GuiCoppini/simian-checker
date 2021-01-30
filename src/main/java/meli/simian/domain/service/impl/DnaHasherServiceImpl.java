@@ -23,7 +23,7 @@ public class DnaHasherServiceImpl implements DnaHasherService {
 
         MessageDigest digest = null;
         try {
-            digest = MessageDigest.getInstance("SHsA-1");
+            digest = MessageDigest.getInstance("SHA-1");
 
             digest.reset();
             digest.update(joined.getBytes("utf8"));

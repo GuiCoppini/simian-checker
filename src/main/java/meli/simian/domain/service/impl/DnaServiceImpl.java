@@ -21,7 +21,7 @@ public class DnaServiceImpl implements DnaService {
     }
 
     @Override
-    public DnaDocument persistComputation(String[] dna, boolean isSimian) {
+    public void persistComputation(String[] dna, boolean isSimian) {
         String hashedDna = hasher.hash(dna);
 
         DnaDocument dnaEntity = DnaDocument.builder()
@@ -29,9 +29,8 @@ public class DnaServiceImpl implements DnaService {
                 .dnaHash(hashedDna)
                 .build();
 
-        log.info("Persisting DNA, dnaDocument={}", dnaEntity);
-
-        return repository.save(dnaEntity);
+        DnaDocument stored = repository.save(dnaEntity);
+        log.info("Persisting DNA dnaDocument={}", stored);
     }
 
     @Override

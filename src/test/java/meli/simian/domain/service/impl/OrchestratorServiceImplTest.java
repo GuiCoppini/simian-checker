@@ -1,5 +1,6 @@
 package meli.simian.domain.service.impl;
 
+
 import meli.simian.domain.entity.DnaDocument;
 import meli.simian.domain.entity.enumerator.DnaType;
 import meli.simian.domain.service.DnaService;
