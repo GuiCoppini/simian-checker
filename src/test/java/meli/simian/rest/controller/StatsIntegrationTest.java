@@ -2,8 +2,8 @@ package meli.simian.rest.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.BasicDBObject;
 import meli.simian.SimianApplication;
+import meli.simian.TestUtils;
 import meli.simian.domain.entity.DnaDocument;
 import meli.simian.domain.entity.enumerator.DnaType;
 import meli.simian.domain.repository.DnaRepository;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -36,7 +35,7 @@ class StatsIntegrationTest {
     TestRestTemplate client;
 
     @Autowired
-    MongoTemplate mongoTemplate;
+    TestUtils testUtils;
 
     @Autowired
     DnaRepository repository;
@@ -44,13 +43,10 @@ class StatsIntegrationTest {
     ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
-    void clearDb() {
-        for (String collectionName : mongoTemplate.getCollectionNames()) {
-            if (!collectionName.startsWith("system.")) {
-                mongoTemplate.getCollection(collectionName).deleteMany(new BasicDBObject());
-            }
-        }
+    void cleanupEnvironment() {
+        testUtils.cleanupEnvironment();
     }
+
 
     @Test
     void getsCorrentHumanCount() {

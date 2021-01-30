@@ -1,7 +1,7 @@
 package meli.simian.rest.controller;
 
-import com.mongodb.BasicDBObject;
 import meli.simian.SimianApplication;
+import meli.simian.TestUtils;
 import meli.simian.domain.entity.DnaDocument;
 import meli.simian.domain.entity.enumerator.DnaType;
 import meli.simian.domain.repository.DnaRepository;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -35,18 +34,14 @@ class SimianCheckerIntegrationTest {
     TestRestTemplate client;
 
     @Autowired
-    MongoTemplate mongoTemplate;
-
-    @Autowired
     DnaRepository repository;
 
+    @Autowired
+    TestUtils testUtils;
+
     @BeforeEach
-    void clearDb() {
-        for (String collectionName : mongoTemplate.getCollectionNames()) {
-            if (!collectionName.startsWith("system.")) {
-                mongoTemplate.getCollection(collectionName).deleteMany(new BasicDBObject());
-            }
-        }
+    public void cleanupEnvironment() {
+        testUtils.cleanupEnvironment();
     }
 
     @Test
@@ -163,7 +158,6 @@ class SimianCheckerIntegrationTest {
 
     @Test
     void repeatingRequestWontPersistTwice() {
-
         // asserting it begins empty
         assertEquals(0, repository.findAll().size());
 

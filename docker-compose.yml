@@ -5,18 +5,22 @@ services:
     container_name: mongo_container
     environment:
       - MONGO_INITDB_DATABASE=simian_checker_db
+      - MONGO_INITDB_ROOT_USERNAME=docker_user
+      - MONGO_INITDB_ROOT_PASSWORD=docker_passwd
     ports:
       - 27017:27017
+
 
   simian-checker-app:
     container_name: simian_app_container
     image: simian-checker
-      environment:
-        - "SPRING_PROFILES_ACTIVE=docker"
+    environment:
+    - SPRING_PROFILES_ACTIVE=docker
     ports:
-      - 8080:80
+      - 80:8080
     depends_on:
       - db
+#      - redis
 
 
 #    redis:

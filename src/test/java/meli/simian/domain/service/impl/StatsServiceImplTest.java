@@ -6,7 +6,6 @@ import meli.simian.domain.repository.DnaRepository;
 import meli.simian.domain.service.StatsService;
 import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -34,18 +33,6 @@ class StatsServiceImplTest {
         assertEquals(expectedResult, response);
         verify(repo, times(1)).countByType(DnaType.HUMAN);
         verify(repo, times(1)).countByType(DnaType.MUTANT);
-    }
-
-    @Test
-    void returnsNullRatioIfHumanCountIsZero() {
-        long mutantCount  = 50L;
-        long humanCount = 0L;
-
-        mockRepositories(mutantCount, humanCount);
-
-        StatsInfo response = service.getActualStats();
-
-        assertNull(response.getRatio());
     }
 
     private void mockRepositories(long mutantCount, long humanCount) {

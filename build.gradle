@@ -1,23 +1,20 @@
 plugins {
 	id 'org.springframework.boot' version '2.4.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-//	id 'java'
 
 	// java 11
 	id 'java-library'
-
-
+	
 	id 'com.google.cloud.tools.appengine' version '2.4.1'
 
 }
 
 group = 'meli'
 version = '0.0.1-SNAPSHOT'
+
 // java 11
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
-//sourceCompatibility = JavaVersion.VERSION_1_8
-//targetCompatibility = JavaVersion.VERSION_1_8
 
 configurations {
 	compileOnly {
@@ -44,11 +41,11 @@ dependencies {
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: '2.3.0.RELEASE'
 	compile group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.0.0.RELEASE'
 
-	testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '2.1.2'
+	testImplementation group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '2.1.2'
 
 	compile('io.springfox:springfox-swagger2:2.9.2')
 	compile('io.springfox:springfox-swagger-ui:2.9.2')
-
+	
 //	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.3.0.RELEASE'
 }
 

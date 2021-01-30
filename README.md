@@ -66,54 +66,62 @@ Conclusão: caso seja necessário o Redis para esse projeto, a POC foi feita e b
 do docker-compose, build.gradle e application*-properties.
 
 ## Hospedagem
-A hospedagem da aplicação foi feita:
+A hospedagem da aplicação e do banco foram feitas nos seguintes locais:
 * Heroku - Muito fácil de subir, fácil de passar variáveis de ambiente e fácil de configurar (e grátis).
 * GCP - Subir um Java 8 e um Java 11 são configurações diferentes, Java 8 deu muita dor de cabeça e acabou indo como Java 11.
+* Atlas - O MongoDB está hospedado no Atlas. Para consultá-lo, pode usar a String de conexão listada abaixo
+no Compass ("Workbench" que utilizei para administrar o MongoDB).
+  * O nome do db é `simian_checker_db` e a collection é `dna`
+
+MongoDB - 
+```
+mongodb+srv://meli_user:meli_passwd@simian-checker-cluster.auxqr.mongodb.net/simian_checker_db
+```
+
 
 Heroku
 ```
-https://simian-checker-app.herokuapp.com/stats
+https://simian-checker-app.herokuapp.com/
 ```
 
 GCP
 ```
-https://simian-checker.ue.r.appspot.com/stats
+https://simian-checker.ue.r.appspot.com/
 ```
-
 
 ## Como rodar a aplicação
 Para rodar a aplicação, há, a grosso modo, 2 maneiras:
 1) Aplicação em Docker apontando para o banco "produtivo" (será explicado posteriormente);
 2) Aplicação e banco ambos Dockerizados.
 
+OBS.: Há 3 profiles (SPRING_PROFILES_ACTIVE) na aplicação:
+* default - utilizado para rodar a aplicação lcoal (sem docker) apontando para o bando dockerizado;
+* docker - utilizado quando tanto a app quanto o banco estão em docker;
+* prod - utilizado para utilizar o banco hospedado no Atlas.
+
 ### Aplicação dockerizada apontando para o banco remoto
 Para executar a aplicação em docker (expondo a porta 80) e fazê-la apontar para o banco remoto, basta executar o seguinte comando:
 ```bash
-docker run -p 80:8080 -e "SPRING_PROFILES_ACTIVE=prod" dockerpoc:latest 
-```
+docker run -p 80:8080 -e "SPRING_PROFILES_ACTIVE=prod" simian-checker:latest 
+``` 
 
 ### Aplicação e banco dockerizados
 Para executar tudo em docker, você pode utilizar o docker-compose com os seguintes comandos:
 ```bash
-./gradlew clean build                  # gera o entregável da aplicação
-docker build -t simian-checker-app .   # monta a imagem Docker que será utilizada pelo compose
+./gradlew clean build                  # gera o entregável da aplicação, incluindo testes
+docker build -t simian-checker .       # monta a imagem Docker que será utilizada pelo docker-compose
 docker-compose up                      # sobe o banco e a aplicação, ambos dockerizados
 ```
 
-## Como consumir da aplicação
-Apesar de ser possível rodar a aplicação local (como indicado anteriormente), também é possível consumí-la da internet, onde a aplicação está exposta.  
-* API - a API pode ser acessada via
-```
-https://simian-checker-app.herokuapp.com/
-```
-
-* MongoDB - o banco  está hospedado no Atlas. Para consultá-lo, pode usar a seguinte String de conexão no Compass ("Workbench" que utilizei para acessar o MongoDB). O nome do db é `simian_checker_db` e a collection é `dna`
-```
-mongodb+srv://meli_user:meli_passwd@simian-checker-cluster.auxqr.mongodb.net/simian_checker_db
-```
 
 ### Documentação da API
 A documentação, como indicado no início, está disponível no Swagger da aplicação:
 ```
 https://simian-checker-app.herokuapp.com/swagger-ui.html
 ```
+
+## Próximos passos do projeto
+Aqui vão algumas ideias que me soaram interessantes porém não fizeram parte do MVP do projeto:
+* Task do gradle separada para rodar os testes integrados separadamente
+* Trocar o MongoDB embedded pelo TestContainers
+* Descrever os testes com @DisplayName
