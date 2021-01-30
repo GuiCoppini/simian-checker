@@ -183,7 +183,7 @@ curl --location --request GET 'https://simian-checker.ue.r.appspot.com/stats'
 
 - Curl para limpar o banco e/ou o cache
 ```
-curl --location --request GET 'https://simian-checker.ue.r.appspot.com/mgmt/clear' \
+curl --location --request PUT 'localhost:8080/mgmt/clear' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "clear_cache": true,
