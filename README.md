@@ -1,7 +1,19 @@
 # Simian-Checker
-
 Simian-Checker é uma aplicação escrita em Java + SpringBoot e é capaz de verificar se uma determinada sequência de DNA pertence a um ser Humano ou Mutante.  
 Resumidamente, a aplicação utiliza o MongoDB para armazenar os DNAs já computados e evitar que sejam computados novamente. A app também possui testes unitários e de integração, contando com mais de 90% de code coverage nos testes.
+
+### Índice
+* [Banco](#banco)
+* [Frameworks e dependências](#frameworks-e-dependências)
+* [Java 11?](#por-que-Java-11?)
+* [Como rodar a aplicação](#como-rodar-a-aplicação)
+* [Estrutura da Aplicação](#estrutura-da-aplicação)
+* [Como a aplicação funciona?](#como-a-aplicação-funciona?)
+* [Testes](#testes)
+* [Cache](#cache)
+* [Hospedagem](#hospedagem)
+* [Documentação/Swagger](#documentação-da-API)
+* [Próximos passos](#Próximos-passos-do-projeto)
 
 ## Banco
 Para persistir informações de DNAs já computados, o Simian-Checker utiliza um MongoDB; banco não-relacional escolhido devido à sua rápida execução de SELECTs e INSERTs. Isso é importante pois a aplicação não conta com DELETEs nem UPDATEs, uma vez que os DNAs são computados e gravados no banco ou apenas buscados do banco caso já existam.
@@ -22,6 +34,30 @@ fazer quando estamos utilizando Java 11 (Exemplo: com Java 11 é necessário mon
 ignorava tudo que eu tentava colocar). Assim, como não gerou impacto nos fluxos, o Java para o qual o Gradle aponta é o 11
 e, para fazer o gradle wrapper funcionar, é necessário settar o path Java 11 na JAVA_HOME, pois o wrapper utiliza o JAVA_HOME. 
 
+## Como rodar a aplicação
+Para rodar a aplicação, há, a grosso modo, 2 maneiras:
+1) Aplicação em Docker apontando para o banco "produtivo" (será explicado posteriormente);
+2) Aplicação e banco ambos Dockerizados.
+
+OBS.: Há 3 profiles (SPRING_PROFILES_ACTIVE) na aplicação:
+* default - utilizado para rodar a aplicação lcoal (sem docker) apontando para o bando dockerizado;
+* docker - utilizado quando tanto a app quanto o banco estão em docker;
+* prod - utilizado para utilizar o banco hospedado no Atlas.
+
+### Aplicação dockerizada apontando para o banco remoto
+Para executar a aplicação em docker (expondo a porta 80) e fazê-la apontar para o banco remoto, basta executar o seguinte comando:
+```bash
+docker run -p 80:8080 -e "SPRING_PROFILES_ACTIVE=prod" simian-checker:latest 
+``` 
+
+### Aplicação e banco dockerizados
+Para executar tudo em docker, você pode utilizar o docker-compose com os seguintes comandos:
+```bash
+./gradlew clean build                  # gera o entregável da aplicação, incluindo testes
+docker build -t simian-checker .       # monta a imagem Docker que será utilizada pelo docker-compose
+docker-compose up                      # sobe o banco e a aplicação, ambos dockerizados
+```
+
 
 ## Estrutura da aplicação
 A aplicação foi divida principalmente em dois pacotes, o `rest` e o `domain` (também tem o common, mas não é tão "principal" assim).
@@ -32,10 +68,10 @@ A aplicação foi divida principalmente em dois pacotes, o `rest` e o `domain` (
 A ideia de separar as camadas de tal maneira é para que a camada de aplicação seja independente da camada de interface. Com isso podemos utilizar a lógica da aplicação e mudar o ponto de entrada, como deixar de usar REST e passar a utilizar algum CLI, ou até mesmo outra tecnologia como gRPC, pois só deveria ser reimplementada a lógica da interface.  
 Por outro lado, a camada REST conhece alguns objetos da camada de service, pois a camada da interface é quem faz a comunicação do mundo de fora (cliente) com o mundo de dentro (aplicação), mas a aplicação não deve conhecer entidades do mundo "de fora".
 
-![Alt text here](images/simian.png)
+![Diagrama](images/diagram.png)
 
-## Como a aplicação funciona?
-### Cálculo do `isSimian(String[] dna)`
+### Como a aplicação funciona?
+#### Endpoint `/simian`
 O ponto de entrada da aplicação para determinar se um DNA é simio ou não é na classe `SimianCheckerController`; antes que o objeto de request entre na lógica da aplicação, há uma anotação `@ValidDNAMatrix` que validará se o DNA enviado é válido (matrix quadrada, caracteres permitidos etc); caso não seja, a aplicação retornará status 400 e um payload indicando os erros do Request.  
 Após isso, o DNA é então enviado ao `OrchestratorService`, service responsável por verificar se o DNA já foi computado ou se deve passar pelo algoritmo de identificação (OBS.: Esse service é cacheado por 15 minutos para evitar hits desnecessários no banco).
 
@@ -54,9 +90,21 @@ A complexidade deste algoritmo, por percorrer a matriz praticamente 4 vezes (tra
 
 Por fim, após o algoritmo verificar se o DNA é simio ou não, o DNA é digerido em um SHA-1 para que seja salvo no banco sem que ocupe um espaço fortemente variável e que facilite a comparação; e então o Controller faz a verificação se deve retornar 200 ou 403, afinal, a camada REST e ela apenas, tem a responsabilidade sobre como a resposta será montada.
 
-### Endpoint de /stats
+#### Endpoint `/stats`
 O endpoint de statistics é bem simples, o StatsController faz a requisição para o StatsService que, por sua vez, utiliza o DnaRepository para que busque no banco a quantidade de DNAs salvos com cada tipo (humano ou mutante), retorna um objeto para o Controller e o Controller , por ser da camada de interface REST, faz a tratativa no objeto e o converte para o objeto de response, podendo omitir campos se precisar.
 
+## Testes
+No pacote de teste, é possível encontrar testes dos services da aplicação e também do controller da aplicação.
+
+### Unitários
+Os testes de services e components em geral são testes unitários, fazendo uso do Mockito para simular chamadas a outras 
+classes para que a lógica de outras classes não interfira na classe que está sendo testada.  
+
+### Integração
+Os testes de integração estão baseados nos nomes dos Controllers. Vale lembrar que não há nenhum
+mock nos testes integrados.  
+Para testar o fluxo ponta-a-ponta, eu utilizei o TestRestTemplate para fazer as requisições à API e uma dependência 
+que configura um MongoDB embedded para que não seja necessário mockar o repositório.
 
 ## Cache
 Para o cache, eu acabei utilizando o Cache padrão do Spring. As configurações para habilitar um redis estão comentados
@@ -88,31 +136,6 @@ GCP
 ```
 https://simian-checker.ue.r.appspot.com/
 ```
-
-## Como rodar a aplicação
-Para rodar a aplicação, há, a grosso modo, 2 maneiras:
-1) Aplicação em Docker apontando para o banco "produtivo" (será explicado posteriormente);
-2) Aplicação e banco ambos Dockerizados.
-
-OBS.: Há 3 profiles (SPRING_PROFILES_ACTIVE) na aplicação:
-* default - utilizado para rodar a aplicação lcoal (sem docker) apontando para o bando dockerizado;
-* docker - utilizado quando tanto a app quanto o banco estão em docker;
-* prod - utilizado para utilizar o banco hospedado no Atlas.
-
-### Aplicação dockerizada apontando para o banco remoto
-Para executar a aplicação em docker (expondo a porta 80) e fazê-la apontar para o banco remoto, basta executar o seguinte comando:
-```bash
-docker run -p 80:8080 -e "SPRING_PROFILES_ACTIVE=prod" simian-checker:latest 
-``` 
-
-### Aplicação e banco dockerizados
-Para executar tudo em docker, você pode utilizar o docker-compose com os seguintes comandos:
-```bash
-./gradlew clean build                  # gera o entregável da aplicação, incluindo testes
-docker build -t simian-checker .       # monta a imagem Docker que será utilizada pelo docker-compose
-docker-compose up                      # sobe o banco e a aplicação, ambos dockerizados
-```
-
 
 ### Documentação da API
 A documentação, como indicado no início, está disponível no Swagger da aplicação:
