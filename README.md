@@ -7,7 +7,7 @@ Resumidamente, a aplicação utiliza o MongoDB para armazenar os DNAs já comput
 Para persistir informações de DNAs já computados, o Simian-Checker utiliza um MongoDB; banco não-relacional escolhido devido à sua rápida execução de SELECTs e INSERTs. Isso é importante pois a aplicação não conta com DELETEs nem UPDATEs, uma vez que os DNAs são computados e gravados no banco ou apenas buscados do banco caso já existam.
 
 ## Frameworks e dependências
-A aplicação, como dito anteriormente foi escrita em Java 8 + SpringBoot, a ferramenta de build utilizada foi o Gradle.
+A aplicação, como dito anteriormente foi escrita em Java 11 + SpringBoot, a ferramenta de build utilizada foi o Gradle.
 
 A aplicação também utiliza:  
 * JUnit - testes unitários
@@ -15,6 +15,9 @@ A aplicação também utiliza:
 * Swagger - documentação (será abordado mais à frente)
 * Lombok - ajuda a evitar código boilerplate como construtores, getters e setters etc
 * EmbeddedMongo - MongoDB embedded utilizado nos testes integrados
+
+### Por que Java 11?
+No início, a aplicação estava sendo escrita em Java 8 por costume, porém, o deploy no GCP era 1000x mais fáciç
 
 
 ## Estrutura da aplicação

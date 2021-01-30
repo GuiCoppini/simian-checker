@@ -1,7 +1,11 @@
 plugins {
 	id 'org.springframework.boot' version '2.4.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+//	id 'java'
+
+	// java 11
+	id 'java-library'
+
 
 	id 'com.google.cloud.tools.appengine' version '2.4.1'
 
@@ -9,7 +13,11 @@ plugins {
 
 group = 'meli'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+// java 11
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+//sourceCompatibility = JavaVersion.VERSION_1_8
+//targetCompatibility = JavaVersion.VERSION_1_8
 
 configurations {
 	compileOnly {
@@ -48,7 +56,7 @@ appengine {
 	deploy {
 		version = 'GCLOUD_CONFIG'
 		projectId = 'GCLOUD_CONFIG'
-//		stopPreviousVersion = true // etc
+		stopPreviousVersion = true
 		appEngineDirectory = 'build/staged-app/app.yaml'
 	}
 }
