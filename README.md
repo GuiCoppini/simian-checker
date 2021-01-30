@@ -40,7 +40,7 @@ Para rodar a aplicação, há, a grosso modo, 2 maneiras:
 2) Aplicação e banco ambos Dockerizados.
 
 OBS.: Há 3 profiles (SPRING_PROFILES_ACTIVE) na aplicação:
-* default - utilizado para rodar a aplicação lcoal (sem docker) apontando para o bando dockerizado;
+* default - utilizado para rodar a aplicação local (sem docker) apontando para o bando dockerizado;
 * docker - utilizado quando tanto a app quanto o banco estão em docker;
 * prod - utilizado para utilizar o banco hospedado no Atlas.
 
