@@ -41,6 +41,8 @@ class StatsIntegrationTest {
     @Autowired
     DnaRepository repository;
 
+    ObjectMapper mapper = new ObjectMapper();
+
     @BeforeEach
     void clearDb() {
         for (String collectionName : mongoTemplate.getCollectionNames()) {
@@ -107,7 +109,6 @@ class StatsIntegrationTest {
     @Test
     public void doesNotShowRatioFieldWhenHumanCountIsZero()
             throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
         long humans = 0;
         long mutants = 654;
 
@@ -116,11 +117,11 @@ class StatsIntegrationTest {
         // correct is mutant/human
         ResponseEntity<StatsResponse> response = client.getForEntity("/stats", StatsResponse.class);
 
-        String dtoAsString = mapper.writeValueAsString(response);
+        String json = mapper.writeValueAsString(response);
 
-        assertThat(dtoAsString, containsString("count_mutant_dna"));
-        assertThat(dtoAsString, containsString("count_human_dna"));
-        assertThat(dtoAsString, not(containsString("ratio")));
+        assertThat(json, containsString("count_mutant_dna"));
+        assertThat(json, containsString("count_human_dna"));
+        assertThat(json, not(containsString("ratio")));
     }
 
 

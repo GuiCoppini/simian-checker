@@ -51,7 +51,23 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         response.setMessage(ex.getMessage());
         response.setErrors(ex.getErrors());
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(status)
+                .body(response);
+    }
+
+    // Handling generic exception to avoid showing the exception to the final user
+    // mitigating a possible security flaw
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<ErrorPayload> handleGenericExceptionHandler(Exception ex) {
+        log.error("A generic exception was thrown, building error payload, ex={}",ex);
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        ErrorPayload response = new ErrorPayload();
+        response.setCode(status.value());
+        response.setMessage("An unknown error occurred, please contact the application administrator.");
+
+        return ResponseEntity.status(status)
                 .body(response);
     }
 }
