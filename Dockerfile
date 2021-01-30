@@ -7,4 +7,4 @@ ARG JAR_FILE=build/libs/simian-checker*.jar
 
 COPY ${JAR_FILE} app.jar
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar", "/app.jar"]

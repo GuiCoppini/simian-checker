@@ -12,9 +12,9 @@ services:
     container_name: simian_app_container
     image: simian-checker
       environment:
-        - "SPRING_PROFILES_ACTIVE=test"
+        - "SPRING_PROFILES_ACTIVE=docker"
     ports:
-      - 8080:8080
+      - 8080:80
     depends_on:
       - db
 

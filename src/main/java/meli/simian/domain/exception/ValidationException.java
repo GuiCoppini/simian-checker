@@ -1,11 +1,13 @@
 package meli.simian.domain.exception;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 public class ValidationException extends RuntimeException {
     private Set<String> errors = new HashSet<>();
 
