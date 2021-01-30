@@ -52,6 +52,21 @@ Por fim, após o algoritmo verificar se o DNA é simio ou não, o DNA é digerid
 O endpoint de statistics é bem simples, o StatsController faz a requisição para o StatsService que, por sua vez, utiliza o DnaRepository para que busque no banco a quantidade de DNAs salvos com cada tipo (humano ou mutante), retorna um objeto para o Controller e o Controller , por ser da camada de interface REST, faz a tratativa no objeto e o converte para o objeto de response, podendo omitir campos se precisar.
 
 
+## Cache
+Para o cache, eu acabei utilizando o Cache padrão do Spring. As configurações para habilitar um redis estão comentados
+na aplicação, porém não as deixei lá pois só funcionaria no ambiente 100% dockerizado, ou seja, não faz sentido dado que 
+a aplicação que está hospedada remotamente não possuiria Redis.  
+Conclusão: caso seja necessário o Redis para esse projeto, a POC foi feita e basta descomentar as configurações do Redis 
+do docker-compose, build.gradle e application*-properties.
+
+## Hospedagem
+Para decidir onde hospedar o serviço, encontrei diversos problemas. A ideia inicial era hospedar no GCP, porém 
+não consegui fazer com que a aplicação subisse um AppEngine com o SpringActiveProfiles diferente do default, o que 
+é um problema considerável para uma app do mundo real. Quando o CLI identificava que a configuração estava 
+com o ActiveProfiles settado, ela nunca fazia o deploy e em um dado momento uma aplicação que estava com problema ficou 
+restartando ininterruptamente e subindo mais de 9 instâncias de AppEngine. Nem o console do GCP deixava eu deletar as instâncias 
+e tive que terminar por encerrar o projeto.  
+Depois disso eu criei outro projeto lá mas os problemas persistem; por isso migrei para o Heroku. 
 
 ## Como rodar a aplicação
 Para rodar a aplicação, há, a grosso modo, 2 maneiras:

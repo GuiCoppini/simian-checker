@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject;
 import meli.simian.SimianApplication;
 import meli.simian.rest.model.DNACheckRequest;
 import meli.simian.rest.model.ErrorPayload;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.Assert.assertEquals;
@@ -23,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 // This test suite will magically build an embedded MongoDB thanks to some dependencies added
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = SimianApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @AutoConfigureDataMongo
 class SimianCheckerIntegrationTest {
 
@@ -33,7 +31,7 @@ class SimianCheckerIntegrationTest {
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @Before
+    @BeforeEach
     void clearDb() {
         for (String collectionName : mongoTemplate.getCollectionNames()) {
             if (!collectionName.startsWith("system.")) {
