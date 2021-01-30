@@ -106,6 +106,20 @@ mock nos testes integrados.
 Para testar o fluxo ponta-a-ponta, eu utilizei o TestRestTemplate para fazer as requisições à API e uma dependência 
 que configura um MongoDB embedded para que não seja necessário mockar o repositório.
 
+### Coverage de testes
+Para fazer a verificação da cobertura de testes, eu utilizei o plugin do JaCoCo, para gerar um report sobre a cobertura,
+basta rodar o seguinte comando
+```
+./gradlew clean build jacocoTestReport
+```
+E ver o HTML com os resultados dos testes em build/reports/jacoco/test/html/index.html
+
+OBS.: Para que o JaCoCo fizesse a análise correta da cobertura, foi necessário adicionar um arquivo de configuração do Lombok 
+`lombok.config` para que o JaCoCo ignorasse código gerado pelo Lombok, como equals() e hashCode(). Essa anotação faz com 
+que o Lombok adicione @Generated ao código gerado e, consequentemente, o JaCoCo os ignora.
+
+Por fim, a cobertura de testes ficou por volta dos 95% segundo o JaCoCo (e segundo o IntelliJ também).
+
 ## Cache
 Para o cache, eu acabei utilizando o Cache padrão do Spring. As configurações para habilitar um redis estão comentados
 na aplicação, porém não as deixei lá pois só funcionaria no ambiente 100% dockerizado, ou seja, não faz sentido dado que 
