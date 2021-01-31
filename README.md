@@ -98,6 +98,12 @@ Este endpoint de Management só foi criado para facilitar na hora da execução 
 Assim, o usuário que está testando a aplicação pode limpar o banco e o cache para testar algumas funcionalidades sem precisar 
 aguardar o tempo do reset do Cache e sem precisar logar no Atlas para limpar o banco.
 
+##### Por que um PUT e não um DELETE?
+A ideia do DELETE é deletar um recurso, o PUT foi usado mais como um método idempotente para "limpar" algo.
+Em outras palavras o PUT foi utilizado como uma chamada de um método/função da aplicação que gerará um retorno idempotente 
+(mesmo se o endpoint for chamado N vezes seguidas com o MESMO payload,
+ o resultado será o mesmo: Cache e/ou Banco limpos (dependendo do request, claro)).
+
 ## Testes
 No pacote de teste, é possível encontrar testes dos services da aplicação e também do controller da aplicação.
 
