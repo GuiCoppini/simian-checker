@@ -41,7 +41,7 @@ Para rodar a aplicação, há, a grosso modo, 2 maneiras:
 2) Aplicação e banco ambos Dockerizados.
 
 OBS.: Há 3 profiles (SPRING_PROFILES_ACTIVE) na aplicação:
-* default - utilizado para rodar a aplicação local (sem docker) apontando para o bando dockerizado;
+* default - utilizado para rodar a aplicação local (sem docker) apontando para o banco dockerizado;
 * docker - utilizado quando tanto a app quanto o banco estão em docker;
 * prod - utilizado para utilizar o banco hospedado no Atlas.
 
@@ -167,7 +167,7 @@ Aqui vão alguns curls para facilitar na hora de consumir a API:
 
 - Curl para enviar DNA não simio (Humano)
 ```bash
-curl --location --request POST 'https://simian-checker.ue.r.appspot.com/simian' \
+curl -i --location --request POST 'https://simian-checker.ue.r.appspot.com/simian' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "dna":  ["ACTG", "GACT", "AGGG", "GACT"]
@@ -185,12 +185,12 @@ curl --location --request POST 'https://simian-checker.ue.r.appspot.com/simian' 
 
 - Curl para o endpoint de estatísticas
 ```
-curl --location --request GET 'https://simian-checker.ue.r.appspot.com/stats'
+curl -i --location --request GET 'https://simian-checker.ue.r.appspot.com/stats'
 ```
 
 - Curl para limpar o banco e/ou o cache
 ```
-curl --location --request PUT 'localhost:8080/mgmt/clear' \
+curl -i --location --request PUT 'localhost:8080/mgmt/clear' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "clear_cache": true,
