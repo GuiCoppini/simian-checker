@@ -7,6 +7,7 @@ Resumidamente, a aplicação utiliza o MongoDB para armazenar os DNAs já comput
 * [Frameworks e dependências](#frameworks-e-dependências)
 * [Java 11?](#por-que-Java-11?)
 * [Como rodar a aplicação](#como-rodar-a-aplicação)
+* [CURLs](#Curls-essenciais)
 * [Estrutura da Aplicação](#estrutura-da-aplicação)
 * [Como a aplicação funciona?](#como-a-aplicação-funciona?)
 * [Testes](#testes)
